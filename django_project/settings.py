@@ -11,6 +11,10 @@ https://docs.djangoproject.com/en/5.1/ref/settings/
 """
 
 from pathlib import Path
+from environs import Env
+
+env = Env()
+env.read_env()
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -20,12 +24,12 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # See https://docs.djangoproject.com/en/5.1/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = "django-insecure-7&*zy=hp%(y(+e$%r_2qs5=0+_i89^lc#mkz3btfwrde7=d9-="
+SECRET_KEY = env("DJANGO_SECRET_KEY")
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = env("DJANGO_DEBUG")
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ["localhost", "127.0.0.1"]
 
 
 # Application definition
@@ -47,23 +51,6 @@ INSTALLED_APPS = [
     "pages.apps.PagesConfig",
 ]
 
-AUTH_USER_MODEL = "accounts.CustomUser"
-
-# django-allauth config
-LOGIN_REDIRECT_URL = "home"
-LOGOUT_REDIRECT_URL = "home"
-SITE_ID = 1
-ACCOUNT_SESSION_REMEMBER = True
-ACCOUNT_SIGNUP_PASSWORD_ENTER_TWICE = False
-ACCOUNT_USERNAME_REQUIRED = False
-ACCOUNT_AUTHENTICATION_METHOD = "email"
-ACCOUNT_EMAIL_REQUIRED = True
-ACCOUNT_UNIQUE_EMAIL = True
-AUTHENICATION_BACKENDS = (
-    "django.contrib.auth.backends.ModelBacked",
-    "allauth.account.auth_backends.AuthenticationBackend",
-)
-EMAIL_BACKEND = "django.core.mail.backends.console.EmailBackend"
 
 MIDDLEWARE = [
     "django.middleware.security.SecurityMiddleware",
@@ -96,24 +83,19 @@ TEMPLATES = [
 
 WSGI_APPLICATION = "django_project.wsgi.application"
 
-
-
-# django-crispy-forms
-CRISPY_ALLOWED_TEMPLATE_PACKS = "bootstrap5"
-CRISPY_TEMPLATE_PACK = "bootstrap5"
-
 # Database
 # https://docs.djangoproject.com/en/5.1/ref/settings/#databases
 
 DATABASES = {
-    "default": {
-        "ENGINE": "django.db.backends.postgresql",
-        "NAME": "postgres",
-        "USER": "postgres",
-        "PASSWORD": "postgres",
-        "HOST": "db",
-        "PORT": 5432,
-    }
+    "default": env.dj_db_url("DATABASE_URL", default="postgres://postgres@db/postgres") 
+    #{
+    #    "ENGINE": "django.db.backends.postgresql",
+    #    "NAME": "postgres",
+    #    "USER": "postgres",
+    #    "PASSWORD": "postgres",
+    #    "HOST": "db",
+    #    "PORT": 5432,
+    #}
 }
 
 
@@ -160,3 +142,33 @@ STATICFILES_STORAGE = "django.contrib.staticfiles.storage.StaticFilesStorage"
 # https://docs.djangoproject.com/en/5.1/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
+
+AUTH_USER_MODEL = "accounts.CustomUser"
+
+# django-crispy-forms
+CRISPY_ALLOWED_TEMPLATE_PACKS = "bootstrap5"
+CRISPY_TEMPLATE_PACK = "bootstrap5"
+
+# django-allauth config
+LOGIN_REDIRECT_URL = "home"
+LOGOUT_REDIRECT_URL = "home"
+SITE_ID = 1
+AUTHENICATION_BACKENDS = (
+    "django.contrib.auth.backends.ModelBacked",
+    "allauth.account.auth_backends.AuthenticationBackend",
+)
+EMAIL_BACKEND = "django.core.mail.backends.smtp.EmailBackend"
+ACCOUNT_SESSION_REMEMBER = True
+ACCOUNT_SIGNUP_PASSWORD_ENTER_TWICE = False
+ACCOUNT_USERNAME_REQUIRED = False
+#ACCOUNT_AUTHENTICATION_METHOD = "email"
+ACCOUNT_EMAIL_REQUIRED = True
+ACCOUNT_UNIQUE_EMAIL = True
+
+DEFAULT_FROM_EMAIL = "admin@djangobookstore.com"
+
+EMAIL_HOST = ""
+EMAIL_HOST_USER = ""
+EMAIL_HOST_PASSWORD = ""
+EMAIL_PORT = "465"
+EMAIL_USE_TLS = True
